@@ -5,16 +5,21 @@ const Demo = () => {
   const [age, setAge] = useState<string>("");
   const [gender, setGender] = useState<string>("");
   const [country, setCountry] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setAge("");
     setGender("");
     setCountry("");
+
+    if (name === "") return setError("Please enter a name");
+
     try {
       const agifyResponse = await fetch(`https://api.agify.io?name=${name}`);
       const agifyData = await agifyResponse.json();
       setAge(agifyData?.data?.age);
+
       const genderizeResponse = await fetch(
         `https://api.genderize.io?name=${name}`
       );
@@ -32,6 +37,7 @@ const Demo = () => {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+      setError(`Error fetching data: ${error}`);
     }
   };
 
@@ -44,10 +50,26 @@ const Demo = () => {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setError("");
+              setName(e.target.value);
+            }}
           />
         </label>
-        <button type="submit">Guess</button>
+        {error && <div style={{ color: "red" }}>{error}</div>}
+        <button
+          type="submit"
+          style={{
+            backgroundColor: "blue",
+            color: "white",
+            padding: "10px",
+            borderRadius: "5px",
+            cursor: "pointer",
+            margin: 12,
+          }}
+        >
+          Guess
+        </button>
       </form>
 
       {age && (
